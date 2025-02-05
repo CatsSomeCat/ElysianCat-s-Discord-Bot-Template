@@ -1,0 +1,51 @@
+# Virtual environment and related directories
+.venv/
+.env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+*.dll
+*.dylib
+
+# Configuration files
+*.ini
+*.cfg
+*.toml
+
+# System files
+*.iml
+*.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
+*.class
+*.metadata
+*.lock
+*.log.*
+*.log
+
+# Pyenv
+.python-version
+
+# Environment file
+.env
+
+# VSCode and PyCharm settings
+.vscode/
+.idea/
+
+# Mypy cache
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Asset directories
+.assets/
+
+# Poetry lock file
+poetry.lock

@@ -1,0 +1,67 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {
+            "()": "logging.Formatter",
+            "fmt": "[%(asctime)s] [%(module)s.py] [%(levelname)s] [%(name)s] -> %(message)s"
+        },
+        "colorized": {
+            "()": "logging_.formatters.ColorizedFormatter",
+            "fmt": "[%(asctime)s] [%(module)s.py] [%(levelname)s] [%(name)s] -> %(message)s"
+        },
+        "discord_embed": {
+            "()": "logging_.formatters.DiscordEmbedLoggingFormatter",
+            "additional_fields": {
+                "Logger": "name",
+                "File": "filename",
+                "Function": "funcName",
+                "Line": "lineno",
+                "Thread": "threadName",
+                "Process": "processName"
+            }
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "colorized"
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging_.handlers.DualRotatingHandler",
+            "formatter": "simple",
+            "file_name": "logs/app.log",
+            "max_bytes": 5242880,
+            "backup_count": 3,
+            "backup_extension_type": "time",
+            "delay": false,
+            "when": "MIDNIGHT",
+            "interval": 3,
+            "mode": "a"
+        },
+        "discord": {
+            "level": "ERROR",
+            "class": "logging_.handlers.DiscordWebHookHandler",
+            "formatter": "discord_embed",
+            "webhook_id": null,
+            "webhook_token": null,
+            "capacity": 1,
+            "flush_interval": 60.0,
+            "throttle_limit": 5.0,
+            "flush_on_close": true,
+            "proxy": "socks5://127.0.0.1:12334"
+        }
+    },
+    "loggers": {
+        "": {
+            "level": "DEBUG",
+            "handlers": [
+                "file",
+                "discord",
+                "console"
+            ]
+        }
+    }
+}
