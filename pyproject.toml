@@ -1,0 +1,182 @@
+[virtualenvs]
+# This ensures isolation of the project's dependencies, preventing conflicts with global Python packages
+create = true # Automatically creates a virtual environment if one doesn't exist
+
+# Store the virtual environment inside the project's directory
+in-project = true # This makes the project self-contained and simplifies project portability
+
+# Path to the directory containing the virtual environment
+# venvPath = "." # This helps Pyright locate the correct Python interpreter and dependencies
+
+# Name of the virtual environment directory
+venv = ".venv/"
+
+# Specify the desired Python version for the virtual environment
+# The specified range enforces the use of Python versions that are at least 3.13 but less than 4.0
+# This helps maintain compatibility with dependencies and features used in the project
+# python = ">=3.13,<4.0"  # The required Python version, which is already defined in dev-dependencies
+
+# Disable access to globally installed Python packages (system site-packages)
+# system-site-packages = false # Setting this to 'false' ensures that the virtual environment # This ensures the latest versions of pip and setuptools are used for dependency management and installationis fully isolated from the global Python environment
+
+# This improves installation speed by performing multiple package installations concurrently
+# pip-concurrency = 4 # Enables pip to install dependencies in parallel
+
+# This ensures the latest versions of pip and setuptools are used for dependency management and installation
+# upgrade = true # Automatically upgrades pip and setuptools when creating the environment
+
+# Specify the cache location for virtual environments (optional)
+# cache-dir = "~/.cache/pypoetry/virtualenvs" # This allows Poetry to reuse cached virtual environments, avoiding unnecessary re-creation
+
+[tool.poetry]
+# Disable packaging by Poetry because the project is not intended to be distributed as a Python package
+package-mode = false
+
+[project]
+# The name of the project or Discord bot, typically reflecting the purpose of the bot
+name = "ElysianCat-Discord-Bot-Template"
+
+# The current version of the project or Discord bot, following the CalVer (https://calver.org/) versioning scheme
+# CalVer uses a date-based versioning scheme (e.g., year.month.patch)
+version = "25.1.0"
+
+# A brief description of the project or Discord bot, providing context and purpose
+description = "ElysianCat's Discord Bot Template is a lightweight, highly customizable template designed for building Discord bots.!"
+
+# List of authors contributing to the project, typically including name and email
+authors = [{ name = "ElysianCat", email = "catssomecat@gmail.com" }]
+
+# Path to the 'README.md' file, which contains detailed documentation about the project or Discord bot
+readme = "README.md"
+
+# The open-source license under which the project is distributed
+license = { text = "MIT" }
+
+[tool.poetry.dependencies]
+# The required Python version for the project to function effectively and properly
+python = ">=3.13,<4.0"
+
+# Main dependencies required for the project to operate correctly
+"discord.py" = "^2.4.0"  # Core library for interacting with Discord API
+python-dotenv = "^1.0.1"  # Utility for loading environment variables from an environment file
+# colorama = "^0.4.6"  # Provides cross-platform support for colored terminal text
+# tomli = "^2.0.1" # Tomli is used as a lightweight read-only TOML parser for handling configuration files
+
+# Additional dependencies for supporting some features within the Discord bot
+audioop-lts = "^0.2.1" # Required for audio handling in discord.py
+
+# Poetry development dependencies for linting, formatting, and static analysis
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.1.0"
+black = "^25.1.0"
+tox = "^4.24.1" # A powerful tool for automating and standardizing testing across multiple environments
+pylint = "^3.2.7"  # Linter for identifying coding standard violations and potential issues
+isort = "^5.13.2"  # Utility for sorting Python imports in a consistent and readable way
+flake8 = "^7.1.1"  # Enforces Python's PEP8 style guide and detects common errors
+pyright = "^1.1.374"  # Static type checker for Python, ensuring type correctness and catching type-related issues
+pytest = "^8.3.4"  # Testing framework for writing and running tests
+
+# Black configuration
+[tool.black]
+# Set the line length to 88 (default for Black)
+line-length = 88
+# Include trailing commas for cleaner diffs
+include_trailing_comma = true
+# Ensure Black is compatible with string normalization
+skip_string_normalization = false
+
+# Pylint configuration
+[tool.pylint.MASTER]
+# Disable the "unnecessary-semicolon" warning to allow semicolons in code
+disable = "unnecessary-semicolon"
+
+# Isort configuration
+[tool.isort]
+# Use the "black" profile to ensure compatibility with Black's formatting rules
+profile = "black"
+# Set the maximum line length to 88, which matches Black's default line length
+line_length = 88
+# Ensure isort uses the same settings as Black
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+# Flake8 configuration
+[tool.flake8]
+# Set the maximum line length to 88, matching Black's default
+max-line-length = 88
+# Ignore the "E203" error (whitespace before ':') as it conflicts with Black
+# Ignore the "E266" error (too many leading '#' for a comment)
+# Ignore the "E501" error (line too long) as Black handles line length
+# Ignore the "W503" error (line break before binary operator) as Black enforces this
+ignore = "E203, E266, E501, W503"
+# Allow inline comments to start with '#:' (useful for type hints)
+inline-quotes = "double"
+# Allow trailing commas in function calls
+max-complexity = 10
+
+# List of directories to include for type checking
+# Only files in these directories will be analyzed by Pyright
+include = ["utilites", "logging_", "structers", "essentials", "exceptions", "constants", "cogs", "types_"]
+
+# List of directories to exclude from type checking
+# Files in these directories will be ignored by Pyright
+exclude = ["venv", ".venv", "assets", ".assets", "tests", ".tests"]
+
+# Suppress errors for missing imports in untyped or third-party libraries
+# This is useful for libraries that lack type annotations
+ignore_missing_imports = true
+
+# Warn about unnecessary "# type: ignore" comments in the code
+# This helps identify places where type ignores are no longer needed
+warn_unused_ignores = true
+
+# Disable reporting of unused imports.
+# This prevents Pyright from flagging imports that are not explicitly used in the code
+reportUnusedImport = false
+
+# Disable reporting of unused variables
+# This prevents Pyright from flagging variables that are defined but not used
+reportUnusedVariable = false
+
+# reportUnknownParameterType = false
+# reportUnknownArgumentType = false
+# reportUnknownVariableType = false
+# reportUnknownMemberType = false
+# reportInvalidTypeVarUse = false
+# reportMissingTypeArgument = false
+
+# Disable warnings about unnecessary 'isinstance' calls.
+# This suppresses warnings when Pyright determines that an 'isinstance' check is redundant
+reportUnnecessaryIsInstance = false
+
+[tool.pytest.ini_options]
+# Add the root directory to the Python path to allow pytest to find the modules
+pythonpath = "."
+
+# Set the number of times a test can be retried if it fails
+# retry = 2
+
+# Specify the minimum level of logging to display
+# log_level = "INFO" # This ensures you can see logs of a certain severity level (e.g., INFO, WARNING)
+
+# Define the path to the directory where pytest should look for tests
+# testpaths = ["tests"]
+
+# This setting allows you to have custom naming conventions, e.g., tests with a specific prefix or suffix
+# python_files = "test_*.py"
+
+# Enable or disable collecting tests from other directories or modules
+# collection = false
+
+# plugins = ["pytest_cov"]
+
+# You can add additional command-line arguments for pytest here
+# extra_options = ["-n", "auto"]
+
+[build-system]
+# Define the build system dependencies and backend for the project
+requires = ["poetry-core"]  # Core library required for building the project
+build-backend = "poetry.core.masonry.api"  # Backend used by Poetry for building packages
