@@ -28,6 +28,9 @@ __pycache__/
 *.lock
 *.log.*
 *.log
+*.json
+*.jsonl
+*.json5
 
 # Pyenv
 .python-version

@@ -2,8 +2,7 @@
 
 ---
 
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Pre-commit](https://img.shields.io/badge/pre--commit-disabled-lightgrey?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.13+](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.3.2+-blue.svg)](https://discordpy.readthedocs.io/)
 [![GitHub Stars](https://img.shields.io/github/stars/CatsSomeCat/ElysianCat-s-Discord-Bot-Template?style=social)](https://github.com/CatsSomeCat/ElysianCat-s-Discord-Bot-Template/stargazers)
@@ -48,33 +47,22 @@ This makes it perfect for developers who want to create a bot tailored to their 
     ```bash
     cd ElysianCat-Discord-Bot-Template
     ```
-3. Setup environment:
-    ```bash
-    cp .env.example .env  # Linux/macOS
-    copy .env.example .env  # Windows
-    ```
 
-4. Install dependencies:
-    ```bash
-   pip install -r requirements.txt
-    ```
-   
-   For Poetry users:
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt # If using pip
+   ```
 
-    ```bash
-   poetry install # If using Poetry
-    ```
+   ```bash
+   poetry install # If using poetry
+   ```
 
-5. Configure the bot:
-
-   - Rename `.env.example` to `.env` and add your Discord bot token, application id and other things there.
-   - Customize the logging settings in the `logging_config.json` file.
-
-
-6. Run the bot:
+4. Run the bot:
     ```bash
    python main.py
     ```
+
+---
 
 > **Note**: Depending on your system configuration, you may need to replace `python` with the appropriate Python command, such as `py`, `python3`, `python3.13`, or another version-specific command. To check which Python versions are installed, run:
 > ```bash
@@ -85,35 +73,69 @@ This makes it perfect for developers who want to create a bot tailored to their 
 
 ---
 
+## 🤖 Configure the Bot
+
+1. **Environment Configuration:**
+   - Rename `.example.env` to `.env`.
+   - Add your Discord bot token, application ID, and other necessary details in the `.env` file.
+
+2. **Logging Configuration:**
+   - Rename `logging_config.example.json` to `logging_config.json`.
+   - Customize the logging settings in the `logging_config.json` file to suit your needs.
+
+3. **Bot Configuration:**
+   - Rename `config.example.json` to `config.json`.
+   - Modify the settings in the `config.json` file to configure the bot according to your preferences.
+
+---
+
 ## 🔧 Configuration
 
-### Logging
-Customize `logging_config.json` to tailor the logging behavior to your needs.
-
-Here's what you can configure:
+Customize `logging_config.json` to tailor the logging behavior to your needs. Here's what you can configure:
 
 1. **File Logging Paths**: Specify where log files are saved.
 2. **Log Levels**: Set different log levels (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL).
 3. **Formatting Styles**: Customize the format of log messages (e.g., timestamp, log level, message).
-4. **Rotation Policies**: Configure log file rotation based on size or time.
+4. **Rotation Policies**: Configure log file rotation based on size, time or even both simultaneously.
 
 ### Custom Formatters
 
-1. `simple`: Basic log format for file logging.
-
-2. `colorized`: Colorized log format for console output.
-
-3. `discord_embed`: Formats logs into Discord embed messages.
-
-4. `JSONLFormatter` (unused): Formats logs into JSON Lines (JSONL) format.
+1. **`simple`**: Basic log format for file logging.
+2. **`colorized`**: Colorized log format for console output.
+3. **`discord_embed`**: Formats logs into Discord embed messages.
+4. **`JSONLFormatter` (unused)**: Formats logs into JSON Lines (JSONL) format.
 
 ### Custom Handlers
 
-1. `console`: Outputs logs to the console.
+1. **`console`**: Outputs logs to the console.
+2. **`file`**: Writes logs to a file with rotation support.
+3. **`discord`**: Sends logs to a Discord channel via a webhook.
 
-2. `file`: Writes logs to a file with rotation support.
+### Custom Implementation
 
-3. `discord`: Sends logs to a Discord channel via a webhook.
+The bot includes custom handlers and formatters located in `logging_.handlers` and `logging._formatters`:
+
+---
+
+```python
+__all__ = (
+    "DualRotatingHandler",
+    "JSONLFileHandler",
+    "DiscordWebHookHandler",
+)
+```
+
+---
+
+```python
+__all__ = (
+    "ColorizedFormatter",
+    "JSONLFormatter",
+    "DiscordEmbedLoggingFormatter",
+)
+```
+
+---
 
 ### Example `logging_config.json` File:
 ```json
@@ -129,7 +151,7 @@ Here's what you can configure:
     "file_handler": {
       "class": "logging.handlers.RotatingFileHandler",
       "filename": "logs/bot.log",
-      "maxBytes": 10485760,  # 10MB
+      "maxBytes": 10485760,
       "backupCount": 5,
       "formatter": "standard"
     },
