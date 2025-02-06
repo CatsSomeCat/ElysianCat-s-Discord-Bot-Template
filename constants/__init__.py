@@ -1,6 +1,14 @@
-from typing import Dict, Final, Set
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from ._meta import ImmutableCollection
+
+# This block is useful for providing type hints during static analysis (e.g., with mypy or pyright)
+# without impacting runtime performance, it ensures better code clarity, catches type-related
+# errors early, and improves IDE support for autocompletion and refactoring
+if TYPE_CHECKING:
+    from typing import Dict, Final, Set
 
 # Explicitly export specific names to be available in the module's namespace
 # This helps in controlling which names are exposed when the module is imported

@@ -18,7 +18,7 @@ P = ParamSpec("P")  # Represents the parameters of the callable
 R = TypeVar("R")  # Represents the return type of the callable
 
 # This block is useful for providing type hints during static analysis (e.g., with mypy or pyright)
-# without impacting runtime performance It ensures better code clarity, catches type-related
+# without impacting runtime performance, it ensures better code clarity, catches type-related
 # errors early, and improves IDE support for autocompletion and refactoring
 if TYPE_CHECKING:
     from typing import Any, Callable, Dict, Hashable, Literal, Tuple

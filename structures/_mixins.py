@@ -12,9 +12,6 @@ __all__ = ("TupleUtilsMixin", "DictUtilsMixin")
 # errors early, and improves IDE support for autocompletion and refactoring
 if TYPE_CHECKING:
     from typing import Callable, Dict, Optional, Type
-else:
-    # At runtime, treat 'TypedDict' as a regular dict
-    TypedDict = dict
 
 # Define a type variable that can be either an instance of 'NamedTuple' or a dictionary-like object
 T = TypeVar("T", bound=Union[NamedTuple, Mapping[str, Any]])
