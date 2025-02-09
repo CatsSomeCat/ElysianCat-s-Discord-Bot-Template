@@ -40,7 +40,7 @@ This makes it perfect for developers who want to create a bot tailored to their 
 
 1. Clone the repository:
    ```bash
-   git clone "https://github.com/CatsSomeCat/ElysianCat's-Discord-Bot-Template.git"
+   git clone "https://github.com/CatsSomeCat/ElysianCat-s-Discord-Bot-Template.git"
    ```
 
 2. Navigate to the project directory:
