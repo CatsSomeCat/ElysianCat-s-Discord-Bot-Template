@@ -12,6 +12,7 @@ import asyncio
 import logging
 import platform
 
+# Import 'EnvVariables' and 'SanitizedWrapper' from the 'structures' module
 from structures import EnvVariables, SanitizedWrapper
 
 # Import utility functions for loading environment variables, logging configuration and other things
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Load 'WEBHOOK_TOKEN', 'WEBHOOK_ID', 'BOT_TOKEN' and 'APPLICATION_ID' from the '.env' file into the 'credentials' variable
 # Apply sanitization to convert placeholder values like empty strings, "NULL", and "None" (as strings)
-# Into actual None values, ensuring that they're valid
+# Into actual Python values, ensuring that they're valid
 credentials: EnvVariables = SanitizedWrapper(
     EnvVariables(
         **load_env_variables(
@@ -36,6 +37,7 @@ credentials: EnvVariables = SanitizedWrapper(
         )
     )
 )
+
 # Load the logging configuration from the default 'logging_config.json' file
 logging_configuration = load_logging_config("logging_config.json")
 
@@ -71,10 +73,10 @@ def validate_credentials() -> None:
     # An instance of the 'EnvVariables' class containing the environment variables
     global credentials
 
-    if not credentials.is_valid():
+    if not credentials.is_valid(): # type: ignore[attr-defined]
         # Get the keys where the values are None
         invalid_keys = [
-            key for key, value in credentials.to_dict().items() if value is None
+            key for key, value in credentials.to_dict().items() if value is None # type: ignore[attr-defined]
         ]
 
         # Log a warning about missing environment variables
@@ -89,8 +91,10 @@ def validate_credentials() -> None:
 def configure_event_loop() -> None:
     """
     Configures the asyncio event loop based on the operating system.
-    Uses uvloop on UNIX-based systems for better performance if available.
-    For Windows, performs additional checks to determine compatibility and settings.
+
+    Uses uvloop on UNIX-based systems (Linux, macOS) for better performance if available.
+    On Windows, performs additional checks for Python version compatibility and WSL.
+    Falls back to the default asyncio event loop if no optimizations are available.
     """
     system_name = platform.system()
     logger.info(f"Detected OS: {system_name}.")
@@ -100,6 +104,7 @@ def configure_event_loop() -> None:
     elif system_name in ("Linux", "Darwin"):  # For Linux and macOS
         _configure_unix_event_loop()
     else:
+        # If the OS is unrecognized, fall back to the default event loop
         logger.info(
             "Unrecognized or unsupported platform detected. "
             "Using the default asyncio event loop."
@@ -110,11 +115,15 @@ def configure_event_loop() -> None:
 def _configure_windows_event_loop() -> None:
     """
     Configures the event loop for Windows systems.
-    Checks Python version compatibility and logs warnings for potential limitations.
-    """
-    required_python = (3, 13)
-    current_version = sys.version_info
 
+    Checks Python version to ensure compatibility.
+    Logs warnings about potential limitations (e.g., `asyncio.to_thread()` availability).
+    Detects Windows Subsystem for Linux (WSL) and suggests uvloop if applicable.
+    Uses the default asyncio event loop as no alternative is set.
+    """
+    required_python = (3, 13)  # Minimum recommended Python version
+    current_version = sys.version_info
+    
     if current_version < required_python:
         required_str = ".".join(map(str, required_python))
         current_str = ".".join(map(str, current_version[:3]))
@@ -122,14 +131,14 @@ def _configure_windows_event_loop() -> None:
             f"Python {current_str} detected - Asyncio on Windows works best with Python {required_str}+. "
             "Some features like asyncio.to_thread() may not be available."
         )
-
+    
     # Check if running on Windows Subsystem for Linux (WSL)
     if "microsoft" in platform.uname().release.lower():
         logger.info(
             "Running on Windows Subsystem for Linux (WSL). "
             "Uvloop may be an option if the Linux subsystem supports it."
         )
-
+    
     logger.info("Using the default asyncio event loop for Windows.")
     _log_current_policy()
 
@@ -137,22 +146,26 @@ def _configure_windows_event_loop() -> None:
 def _configure_unix_event_loop() -> None:
     """
     Configures the event loop for UNIX-based systems (Linux and macOS).
-    Attempts to use uvloop for better performance if available.
-    Falls back to the default asyncio event loop if uvloop is not installed or encounters errors.
+
+    Attempts to install uvloop for better performance.
+    Falls back to the default asyncio event loop if uvloop is not installed or fails.
+    Logs errors if uvloop encounters import or configuration issues.
     """
     try:
-        import uvloop
-
-        uvloop.install()
+        import uvloop # type: ignore[import]
+        
+        uvloop.install()  # Replace the default event loop with uvloop
         logger.info("Successfully installed uvloop for enhanced performance.")
         _log_current_policy()
     except (ImportError, ModuleNotFoundError, AttributeError) as error:
+        # Handle cases where uvloop is missing or misconfigured
         logger.error(
             f"Error while importing uvloop: {str(error)}\n"
             "uvloop is not installed or not configured properly. Using the default asyncio event loop."
         )
         _log_current_policy()
     except Exception as error:
+        # Handle any other unexpected errors
         logger.error(
             f"An unexpected error occurred while configuring uvloop: {error}\n"
             "Falling back to the default asyncio event loop."
@@ -160,18 +173,21 @@ def _configure_unix_event_loop() -> None:
         _log_current_policy()
 
 
-def _log_current_policy(message: str = None) -> None:
+def _log_current_policy(message: str = "") -> None:
     """
     Logs the current event loop policy for debugging and diagnostics.
-    Optionally includes a custom message to provide context.
+
+    If a custom message is provided, logs it before displaying the event loop policy.
+    Attempts to retrieve and log the current event loop policy class.
+    Logs a warning if retrieving the policy fails.
     """
     if message:
         logger.info(message)
-
+    
     try:
         policy = asyncio.get_event_loop_policy()
         policy_info = f"{policy.__class__.__module__}.{policy.__class__.__name__}"
-        logger.debug(f"Active event loop policy: {policy_info}")
+        logger.info(f"Active event loop policy: {policy_info}.")
     except Exception as error:
         logger.warning(f"Could not determine event loop policy: {str(error)}")
 

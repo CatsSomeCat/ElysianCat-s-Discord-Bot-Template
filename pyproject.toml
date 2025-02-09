@@ -30,15 +30,15 @@ venv = ".venv/"
 
 [tool.poetry]
 # Disable packaging by Poetry because the project is not intended to be distributed as a Python package
-package-mode = false
+package-mode = true
 
 [project]
 # The name of the project or Discord bot, typically reflecting the purpose of the bot
-name = "ElysianCat-Discord-Bot-Template"
+name = "ElysianCat-s-Discord-Bot-Template"
 
 # The current version of the project or Discord bot, following the CalVer (https://calver.org/) versioning scheme
 # CalVer uses a date-based versioning scheme (e.g., year.month.patch)
-version = "25.1.0"
+version = "25.2.0"
 
 # A brief description of the project or Discord bot, providing context and purpose
 description = "ElysianCat's Discord Bot Template is a lightweight, highly customizable template designed for building Discord bots.!"
@@ -67,9 +67,9 @@ audioop-lts = "^0.2.1" # Required for audio handling in discord.py
 
 # Poetry development dependencies for linting, formatting, and static analysis
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^4.1.0"
+# pre-commit = "^4.1.0"
 black = "^25.1.0"
-tox = "^4.24.1" # A powerful tool for automating and standardizing testing across multiple environments
+# tox = "^4.24.1" # A powerful tool for automating and standardizing testing across multiple environments
 pylint = "^3.2.7"  # Linter for identifying coding standard violations and potential issues
 isort = "^5.13.2"  # Utility for sorting Python imports in a consistent and readable way
 flake8 = "^7.1.1"  # Enforces Python's PEP8 style guide and detects common errors

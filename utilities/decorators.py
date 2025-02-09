@@ -11,17 +11,81 @@ from .functions import is_hashable, make_hashable
 
 # Explicitly export specific names to be available in the module's namespace
 # This helps in controlling which names are exposed when the module is imported
-__all__ = ("add_private_attributes", "validate_input", "memoize")
+__all__ = ("add_private_attributes", "validate_input", "memoize", "copy_method")
 
 # Define type variables for callable objects
 P = ParamSpec("P")  # Represents the parameters of the callable
 R = TypeVar("R")  # Represents the return type of the callable
+
+# 'T' is a type variable representing the class type being decorated
+# It is constrained to be a subclass of 'type', which means it can be any class
+T = TypeVar("T", bound=type)
 
 # This block is useful for providing type hints during static analysis (e.g., with mypy or pyright)
 # without impacting runtime performance, it ensures better code clarity, catches type-related
 # errors early, and improves IDE support for autocompletion and refactoring
 if TYPE_CHECKING:
     from typing import Any, Callable, Dict, Hashable, Literal, Tuple
+
+
+def copy_method(method_name: str, override: bool = False) -> Callable[[T], T]:
+    """
+    A decorator that copies a method from the first found superclass in the method resolution order (MRO).
+
+    This decorator searches through the MRO of the decorated class for a method with the given name.
+    If the method is found, its implementation and signature are copied to the decorated class.
+    If the method is not found in any superclass, or if the decorated class already has a method with
+    that name and override is set to False, an AttributeError is raised.
+
+    :param method_name: The name of the method to copy.
+    :param override: If True, overrides an existing method in the subclass; otherwise, raises an error.
+    :raises AttributeError: If the method is not found in any superclass or if the method already exists
+                            in the subclass (and override is False).
+    :return: A class decorator that applies the method copying to the target class.
+    """
+    
+    def decorator(cls: T) -> T:
+        """
+        The actual decorator function that is applied to a class.
+
+        This function copies the specified method from the first superclass found in the method resolution order (MRO)
+        and attaches it to the class being decorated.
+
+        It also ensures that the method signature is copied for better IDE autocompletion and static analysis.
+
+        :param cls: The class to which the method will be copied. This is the class being decorated.
+        :return: The class with the copied method from the first found superclass in the MRO.
+        :raises AttributeError: If the method is not found in any superclass or if the method already exists
+                                in the class and overriding is not allowed (based on the `override` parameter).
+        """
+        # Search the class's MRO (excluding the class itself) for the specified method
+        for base in cls.mro()[1:]:
+            parent_method = getattr(base, method_name, None)
+            if parent_method is not None:
+                break
+        else:
+            raise AttributeError(f"No method '{method_name}' found in MRO of {cls.__name__}.")
+
+        # Prevent accidental override of an existing method unless override is explicitly allowed
+        if not override and hasattr(cls, method_name):
+            raise AttributeError(f"'{cls.__name__}' already has a method '{method_name}'. Use override=True.")
+
+        # Create a new method that calls the parent's method while preserving its metadata
+        new_method = functools.wraps(parent_method)(
+            lambda self, *args, **kwargs: parent_method(self, *args, **kwargs)
+        )
+
+        # Explicitly copy the method's docstring along with other metadata
+        new_method.__doc__ = parent_method.__doc__
+
+        setattr(cls, method_name, new_method)
+
+        # Copy the signature for enhanced IDE autocompletion and static analysis
+        getattr(cls, method_name).__signature__ = inspect.signature(parent_method)
+
+        return cls
+
+    return decorator
 
 
 def add_private_attributes(**attrs: Any) -> Callable[[Callable[P, R]], Callable[P, R]]:
